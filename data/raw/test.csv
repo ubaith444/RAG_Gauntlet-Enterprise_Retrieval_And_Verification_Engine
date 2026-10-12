@@ -1,0 +1,24 @@
+question_id,question
+hid-01,"An employee's first day at Acme was 10 May 2026. Under the rulebook in force, how many paid vacation days per calendar year is this employee entitled to during their first 24 months?"
+hid-02,An employee's first day at Acme is 1 July 2026. How many paid vacation days per year do they receive during their first 24 months?
+hid-03,"The Cerberus 4.3 release notes list annual_leave_default = 15, and an employee hired on 10 May 2026 points to that line. Does the release note change their annual leave entitlement? Answer YES or NO."
+hid-04,"Can a visitor enter the laboratory areas at 18:30 if a staff member escorts them? Answer YES or NO, with the reason."
+hid-05,Which team owns and operates the payroll system codenamed Cerberus?
+hid-06,"According to the incident register (the authoritative source for error codes), what is the fix for E-1042?"
+hid-07,What is the maximum database size Chroma supports?
+hid-08,What is the exact embedding dimension of the MiniLM model used in the course notebook?
+hid-09,"When are expense reports due, and through what system must they be submitted now?"
+hid-10,"An employee with 8 months of continuous service resigns with 5 unused vacation days. Under the handbook, are those days paid out at the final payroll? Answer YES or NO."
+hid-11,"According to the official 2026 holiday calendar, what is the first day of the Eid al-Fitr holiday?"
+hid-12,"What is the gateway rate limit per tenant, and over what time period is that limit measured?"
+hid-13,"When does the weekly full backup window run, and how long does it last?"
+hid-14,"In child-parent chunking, what child and parent sizes does the lecture give?"
+hid-15,"In the two-stage retrieval example with 100 labeled questions, what precision@5 does the reranker achieve?"
+hid-16,"In the NDCG worked example, what is the IDCG value?"
+hid-17,"In the TF-IDF example with 4 chunks where 2 chunks contain the term, what is idf(""vacation"")?"
+hid-18,"How many image-caption pairs was CLIP trained on, according to the lecture?"
+hid-19,"Which vector database option should you prefer if you already run Postgres and want SQL, joins and transactions?"
+hid-20,The lecture's multi-query pipeline merges N retrieval result lists with a standard rank-based algorithm. What is it called?
+hid-21,"In HyDE, why can the generated draft still retrieve the right policy even when the draft contains details that are wrong?"
+hid-22,"When the retrieved context is missing evidence (low context recall), which stage of the pipeline does the lecture say is scored first and should be checked before blaming generation?"
+hid-23,Does the handbook allow unused vacation days to be carried past January 31 under an informal agreement with a manager? Answer YES or NO.

@@ -1,0 +1,24 @@
+question_id,answer,cited
+hid-01,21,RB-4.2
+hid-02,15,Amendment A-3
+hid-03,NO,RB-0.4
+hid-04,"NO, visitors may not enter laboratory areas after 18:00, with or without an escort",RB-9.2
+hid-05,Payroll Team,RB-12.1
+hid-06,apply patch GX-11,Appendix B
+hid-07,NOT_IN_CONTEXT,none
+hid-08,NOT_IN_CONTEXT,none
+hid-09,"On the first of each month, through the finance portal",RB-7.3
+hid-10,NO,RB-4.2.4
+hid-11,20 March 2026,page 4
+hid-12,"45 requests per minute, measured over 1 minute",page 2
+hid-13,"Sunday from 02:00 to 04:00, lasting 2 hours",page 2
+hid-14,"child_size 150 tokens, parent_size 1200 tokens",slide 13
+hid-15,0.80,slide 31
+hid-16,2.13,slide 30
+hid-17,0.69,slide 24
+hid-18,400M,slide 38
+hid-19,pgvector,slide 15
+hid-20,Reciprocal Rank Fusion,slide 35
+hid-21,Because drafted answers look like documents (declarative text) so their vectors land closer to the real document than the question vector does,slide 34
+hid-22,retrieval,slide 16
+hid-23,NO,RB-4.2.3

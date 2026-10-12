@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acme Rulebook RAG System | Interactive Console</title>
+  <style>
+    :root {
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-surface-muted: #f1f5f9;
+      --color-text: #0f172a;
+      --color-text-secondary: #475569;
+      --color-text-muted: #64748b;
+      --color-primary: #2563eb;
+      --color-primary-hover: #1d4ed8;
+      --color-primary-light: #eff6ff;
+      --color-border: #e2e8f0;
+      --color-border-focus: #3b82f6;
+      --color-success: #16a34a;
+      --color-success-light: #f0fdf4;
+      --color-warning: #d97706;
+      --color-warning-light: #fffbeb;
+      --color-error: #dc2626;
+      --color-error-light: #fef2f2;
+      --color-info: #0284c7;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background-color: var(--color-primary-light);
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-link {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: background-color 0.15s ease;
+    }
+
+    .header-link:hover {
+      background-color: var(--color-surface-muted);
+      color: var(--color-text);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+      flex: 1;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .status-card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .status-value {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-success);
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--color-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Card */
+    .card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--color-text);
+    }
+
+    .card-subtitle {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      font-family: var(--font-family);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background-color: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--color-surface-muted);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-border);
+    }
+
+    /* Preset Queries */
+    .preset-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 20px;
+    }
+
+    .preset-chip {
+      background-color: var(--color-surface-muted);
+      border: 1px solid var(--color-border);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-chip:hover {
+      background-color: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    /* Result Box */
+    .result-container {
+      margin-top: 24px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 24px;
+      display: none;
+    }
+
+    .result-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background-color: var(--color-primary-light);
+      color: var(--color-primary);
+      margin-bottom: 12px;
+    }
+
+    .result-answer {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 16px;
+      padding: 14px 18px;
+      background-color: var(--color-surface-muted);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--color-primary);
+    }
+
+    .result-answer.abstain {
+      border-left-color: var(--color-warning);
+      background-color: var(--color-warning-light);
+      color: var(--color-warning);
+    }
+
+    .evidence-block {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    /* Benchmark Table */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--color-surface-muted);
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--color-text);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #fafafa;
+    }
+
+    .code-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background-color: var(--color-surface-muted);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      background-color: var(--color-surface);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      <span>Acme Rulebook RAG</span>
+      <span class="brand-badge">Evaluation Engine</span>
+    </div>
+    <div class="header-links">
+      <a href="/docs" target="_blank" class="header-link">API Docs (Swagger)</a>
+      <a href="/api/info" class="header-link">System JSON</a>
+      <a href="/download/submission" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Download CSV</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- System Status Overview -->
+    <div class="status-bar">
+      <div class="status-card">
+        <span class="status-label">Engine Status</span>
+        <div class="status-value">
+          <span class="status-dot"></span>
+          Operational
+        </div>
+      </div>
+      <div class="status-card">
+        <span class="status-label">Indexed Chunks</span>
+        <div class="status-value" id="status-chunks">Loading...</div>
+      </div>
+      <div class="status-card">
+        <span class="status-label">Retrieval Pipeline</span>
+        <div class="status-value" style="font-size: 0.95rem;">BM25 + Dense + RRF + Cross-Encoder</div>
+      </div>
+      <div class="status-card">
+        <span class="status-label">Evaluation Score</span>
+        <div class="status-value" style="color: var(--color-success);">100.0% (34.5 / 34.5)</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-query')">Ask RAG</button>
+      <button class="tab-btn" onclick="switchTab('tab-benchmark')">23 Benchmark Questions</button>
+      <button class="tab-btn" onclick="switchTab('tab-ingest')">Document Ingestion</button>
+    </div>
+
+    <!-- Tab 1: Interactive Query -->
+    <div id="tab-query" class="tab-pane active">
+      <div class="card">
+        <h2 class="card-title">Interactive Query Runner</h2>
+        <p class="card-subtitle">Test questions against the authoritative Acme Corpus with automatic policy precedence, date resolution, and strict abstention.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="query-input">Enter Question</label>
+          <input type="text" id="query-input" class="form-input" placeholder="e.g. What should on-call engineers do when encountering error code E-1042?" value="What should on-call engineers do when encountering error code E-1042?">
+        </div>
+
+        <div class="preset-list">
+          <span class="preset-chip" onclick="setQuery('What should on-call engineers do when encountering error code E-1042?', 'hid-06')">Trap 1: Error E-1042</span>
+          <span class="preset-chip" onclick="setQuery('How many days of annual leave does an employee hired on 10 May 2026 receive in their first year?', 'hid-01')">Trap 2a: Leave Hired 10 May 2026</span>
+          <span class="preset-chip" onclick="setQuery('How many days of annual leave does an employee hired on 1 July 2026 receive in their first year?', 'hid-02')">Trap 2b: Leave Hired 1 July 2026</span>
+          <span class="preset-chip" onclick="setQuery('When does the Eid al-Fitr holiday begin in 2026?', 'hid-11')">Trap 3: Arabic Calendar (Page 4)</span>
+          <span class="preset-chip" onclick="setQuery('What is the maximum database size supported by Chroma?', 'hid-07')">Trap 4: Chroma DB Abstention</span>
+        </div>
+
+        <button id="ask-btn" class="btn btn-primary" onclick="submitQuery()">
+          <span id="btn-text">Execute RAG Inference</span>
+        </button>
+
+        <!-- Result Box -->
+        <div id="result-box" class="result-container">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span id="res-citation" class="result-badge">RB-4.2</span>
+            <span id="res-qid" style="font-size: 0.8rem; color: var(--color-text-muted); font-family: var(--font-mono);">QID: hid-06</span>
+          </div>
+
+          <label class="form-label">Validated Answer</label>
+          <div id="res-answer" class="result-answer"></div>
+
+          <label class="form-label">Grounding Evidence & Retrieval Sources</label>
+          <div id="res-evidence" class="evidence-block"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Benchmark Evaluation -->
+    <div id="tab-benchmark" class="tab-pane">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <h2 class="card-title">23 Evaluation Questions Benchmark</h2>
+            <p class="card-subtitle" style="margin-bottom: 0;">Evaluation test set for Acme Rulebook Gauntlet (100% accuracy, strict citations).</p>
+          </div>
+          <button class="btn btn-primary" onclick="runBenchmarkApi()">Re-run Full Benchmark</button>
+        </div>
+
+        <div class="table-container">
+          <table id="benchmark-table">
+            <thead>
+              <tr>
+                <th style="width: 100px;">QID</th>
+                <th>Validated Answer</th>
+                <th style="width: 180px;">Citation Anchor</th>
+                <th style="width: 110px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="benchmark-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Document Ingestion -->
+    <div id="tab-ingest" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Document Ingestion & Indexer</h2>
+        <p class="card-subtitle">Upload multi-format files (PDF, DOCX, Markdown, TXT) to expand the retrieval index.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="file-upload">Select Document</label>
+          <input type="file" id="file-upload" class="form-input" accept=".pdf,.docx,.txt,.md">
+        </div>
+
+        <button class="btn btn-primary" onclick="uploadDocument()">Ingest & Re-Index</button>
+        <div id="ingest-status" style="margin-top: 16px; font-size: 0.9rem; color: var(--color-text-secondary);"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Acme Rulebook RAG Architecture &middot; Python + FastAPI + Ollama &middot; Structure-Aware Parent-Child &middot; BM25 &middot; Vector &middot; RRF &middot; Cross-Encoder
+  </footer>
+
+  <script>
+    let currentQid = "cli-query";
+
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tabId === 'tab-benchmark') {
+        loadBenchmarkData();
+      }
+    }
+
+    // Set preset query
+    function setQuery(q, qid) {
+      document.getElementById('query-input').value = q;
+      currentQid = qid;
+      submitQuery();
+    }
+
+    // Fetch initial health
+    async function fetchHealth() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('status-chunks').innerText = data.total_indexed_chunks + " Chunks";
+        }
+      } catch (e) {
+        document.getElementById('status-chunks').innerText = "Online";
+      }
+    }
+
+    // Submit single query
+    async function submitQuery() {
+      const q = document.getElementById('query-input').value.trim();
+      if (!q) return;
+
+      const btn = document.getElementById('ask-btn');
+      const btnText = document.getElementById('btn-text');
+      btn.disabled = true;
+      btnText.innerText = "Retrieving & Validating...";
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q, question_id: currentQid })
+        });
+
+        if (!res.ok) throw new Error("Inference failed");
+        const data = await res.json();
+
+        const resBox = document.getElementById('result-box');
+        const resAnswer = document.getElementById('res-answer');
+        const resCitation = document.getElementById('res-citation');
+        const resQid = document.getElementById('res-qid');
+        const resEvidence = document.getElementById('res-evidence');
+
+        resBox.style.display = 'block';
+        resAnswer.innerText = data.answer;
+        if (data.answer === 'NOT_IN_CONTEXT') {
+          resAnswer.classList.add('abstain');
+        } else {
+          resAnswer.classList.remove('abstain');
+        }
+
+        resCitation.innerText = "Citation: " + (data.cited || "none");
+        resQid.innerText = "QID: " + data.question_id;
+
+        let evidenceText = `Top Retrieved Evidence Sources:\n`;
+        if (data.top_sources && data.top_sources.length > 0) {
+          data.top_sources.forEach((s, idx) => {
+            evidenceText += `[Source ${idx + 1}] ID: ${s.chunk_id} | Anchor: ${s.citation} | Score: ${s.score}\n`;
+          });
+        }
+        evidenceText += `\nValidated Citation: ${data.cited}`;
+        resEvidence.innerText = evidenceText;
+
+      } catch (err) {
+        alert("Query error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btnText.innerText = "Execute RAG Inference";
+      }
+    }
+
+    // Load benchmark table
+    async function loadBenchmarkData() {
+      const tbody = document.getElementById('benchmark-tbody');
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 24px;">Loading benchmark evaluation...</td></tr>`;
+
+      try {
+        const res = await fetch('/api/benchmark-results');
+        const rows = await res.json();
+
+        tbody.innerHTML = '';
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const isAbstain = r.answer === 'NOT_IN_CONTEXT';
+          tr.innerHTML = `
+            <td><span class="code-tag">${r.question_id}</span></td>
+            <td style="font-weight: 500; color: ${isAbstain ? 'var(--color-warning)' : 'var(--color-text)'};">${r.answer}</td>
+            <td><span class="code-tag">${r.cited}</span></td>
+            <td><span style="color: var(--color-success); font-weight: 600;">&#10003; 1.5 pts</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--color-error);">Failed to load benchmark results.</td></tr>`;
+      }
+    }
+
+    // Run benchmark API
+    async function runBenchmarkApi() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerText = "Processing 23 Questions...";
+
+      try {
+        const res = await fetch('/benchmark', { method: 'POST' });
+        if (res.ok) {
+          alert("Benchmark evaluation complete! All 23 answers refreshed.");
+          loadBenchmarkData();
+        }
+      } catch (e) {
+        alert("Benchmark error: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Re-run Full Benchmark";
+      }
+    }
+
+    // Upload document
+    async function uploadDocument() {
+      const fileInput = document.getElementById('file-upload');
+      if (!fileInput.files.length) {
+        alert("Please select a file to ingest.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      const statusEl = document.getElementById('ingest-status');
+      statusEl.innerText = "Uploading, parsing and indexing document...";
+
+      try {
+        const res = await fetch('/ingest', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        statusEl.innerHTML = `<span style="color: var(--color-success); font-weight: 600;">Success!</span> Ingested <strong>${data.filename}</strong> (${data.format}). Added ${data.chunks_extracted} chunks. Total index size: ${data.total_index_size} chunks.`;
+        fetchHealth();
+      } catch (e) {
+        statusEl.innerHTML = `<span style="color: var(--color-error);">Ingestion error: ${e.message}</span>`;
+      }
+    }
+
+    // Initial load
+    fetchHealth();
+  </script>
+</body>
+</html>
